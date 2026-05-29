@@ -192,6 +192,15 @@ Coverage:    90.47%
 
 ---
 
+## 🤖 Uso de Inteligencia Artificial
 
+Durante el desarrollo de este proyecto se utilizó **Claude (Anthropic)** como herramienta de apoyo para:
+- Generación de estructura base del pipeline CI/CD
+- Configuración de SonarCloud con GitHub Actions
+- Generación de tests unitarios con Jest
+
+Todos los contenidos fueron revisados, validados y adaptados por el equipo según los requerimientos del proyecto.
+
+Referencia: https://bibliotecas.duoc.cl/ia
 
 
