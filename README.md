@@ -103,6 +103,87 @@ Los servicios están configurados con:
 
 ---
 
+## 🖥️ Self-Hosted Runner — Deploy Local Automático
+
+El pipeline utiliza un **self-hosted runner** instalado en la máquina local, lo que permite que cada `push` a `main` despliegue automáticamente los cambios en `http://localhost:8080`.
+
+### ¿Cómo funciona?
+
+```
+Push a GitHub → GitHub Actions detecta el cambio →
+Runner local recibe el job → Docker reconstruye las imágenes →
+Contenedores actualizados → Cambios visibles en localhost:8080
+```
+
+### Configurar el Self-Hosted Runner (solo la primera vez)
+
+Abre **PowerShell como Administrador** y ejecuta:
+
+```powershell
+# 1. Crear carpeta del runner
+cd C:\
+mkdir actions-runner
+cd actions-runner
+
+# 2. Descargar el runner
+Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.334.0/actions-runner-win-x64-2.334.0.zip -OutFile actions-runner-win-x64-2.334.0.zip
+
+# 3. Extraer
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/actions-runner-win-x64-2.334.0.zip", "$PWD")
+
+# 4. Configurar con el token del repositorio
+./config.cmd --url https://github.com/joralbornoz/ep2-tienda-perritos --token TU_TOKEN
+
+# 5. Habilitar ejecución de scripts
+Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force
+```
+
+> El token se obtiene en GitHub → Settings → Actions → Runners → New self-hosted runner
+
+### Iniciar el Runner
+
+Cada vez que quieras que el deploy automático funcione, abre **PowerShell como Administrador**:
+
+```powershell
+cd C:\actions-runner
+./run.cmd
+```
+
+Deberías ver:
+```
+√ Connected to GitHub
+Listening for Jobs
+```
+
+### Ver cambios en tiempo real
+
+1. Asegúrate que el runner está activo (`Listening for Jobs`)
+2. Haz cualquier cambio en el código y súbelo:
+
+```bash
+git add .
+git commit -m "descripcion del cambio"
+git push origin main
+```
+
+3. El pipeline correrá automáticamente (~2 minutos)
+4. Abre `http://localhost:8080` — los cambios estarán desplegados
+
+### Verificar contenedores activos
+
+```powershell
+docker compose ps
+```
+
+```
+tienda-frontend   running   0.0.0.0:8080->80/tcp
+tienda-backend    running   0.0.0.0:3001->3001/tcp
+tienda-db         running   0.0.0.0:3306->3306/tcp
+```
+
+---
+
 ## 📁 Estructura del Proyecto
 
 ```text
@@ -134,6 +215,7 @@ ep2-tienda-perritos/
 
 ### Requisitos
 - Docker Desktop instalado
+- Self-hosted runner activo (para deploy automático)
 
 ### Pasos
 
